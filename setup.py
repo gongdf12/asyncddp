@@ -44,19 +44,16 @@ from setuptools.command.build_ext import build_ext as _build_ext
 from bluefog import __version__
 
 # Package meta-data.
-NAME = "bluefog"
-DESCRIPTION = "A distributed training framework for diffusion or consensus-type algorithm."
-EMAIL = "bichengying@gmail.com"
-AUTHOR = "Bicheng Ying"
+NAME = "Asyncddp"
+DESCRIPTION = "Asyncddp is a package used for asynchronous model training"
+EMAIL = "1260295805@qq.com"
+AUTHOR = "Gongdaofu"
 REQUIRES_PYTHON = ">=3.7.0"
 VERSION = __version__
 
 EXTRAS = {}
 
-readme = '''Bluefog is a distributed training framework for PyTorch based on
-diffusion/consensus-type algorithm.
-The goal of Bluefog is to make distributed and decentralized machine learning fast,
-fault-tolerant, friendly to heterogeneous environment, and easy to use.
+readme = '''Asyncddp is a package used for asynchronous model training, based on the Bluefog package for communication.
 '''
 
 with open('LICENSE') as f:
