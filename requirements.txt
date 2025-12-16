@@ -1,0 +1,11 @@
+cloudpickle
+ipyparallel
+networkx>=2.0
+notebook
+psutil
+pytest>=5.0
+six
+torch>=1.4.0
+torchvision
+tensorboardX>=1.5
+tqdm>=4.0

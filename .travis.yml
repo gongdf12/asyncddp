@@ -1,0 +1,70 @@
+jobs:
+    include:
+        - os: linux
+          env: MPI=openmpi
+          language: python
+          python: 3.7
+        - os: linux
+          env: MPI=mpich
+          language: python
+          python: 3.7
+        - os: osx
+          env: MPI=openmpi PY=3 NUM_PROC=2
+          language: generic
+          python: 3.7
+        - os: osx
+          env: MPI=mpich PY=3 NUM_PROC=2
+          language: generic
+          python: 3.7
+
+cache:
+    apt: true
+
+addons:
+    apt:
+        update: true
+    homebrew:
+        packages:
+        - openmpi
+
+before_install:
+    - ./scripts/install_mpi.sh $MPI
+    - pip$PY install torch==1.4.0
+    - pip$PY install numpy
+    - pip$PY install matplotlib  # For the plot in doc
+    - python$PY --version
+    - python$PY -c "import torch; print(torch.__version__)"
+    - if [[ "$MPI" == "mpich" ]]; then mpichversion; fi
+    - if [[ "$MPI" == "openmpi" ]]; then ompi_info; fi
+
+install:
+    - BLUEFOG_WITHOUT_TENSORFLOW=1 pip$PY install .
+
+script:
+    - mv bluefog _bluefog  # Force to use installed package instead of local one
+    - make test
+
+# Build and deploy the doc through the sphinx.
+before_deploy:
+    - pip$PY install sphinx sphinx_rtd_theme
+    - cd docs && make html
+    - touch _build/html/.nojekyll
+
+deploy:
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_PAGES_TOKEN  # Set in the settings page of your repository, as a secure variable
+    keep_history: true
+    local_dir: docs/_build/html/
+    on:
+        branch: master
+        condition: $MPI = openmpi
+        tags: true
+
+notifications:
+    email:
+        - bichengying@gmail.com
+        - hanbinhu2016@gmail.com
+        - Sunloverkun@163.com
+        - jiliuwork@gmail.com
+        - kunyuan827@gmail.com
