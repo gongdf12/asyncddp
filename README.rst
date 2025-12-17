@@ -3,47 +3,15 @@ Asyncddp
 Asyncddp  is a package used for asynchronous model training. I have provided an example of asynchronous model training in 'example/test_async-py'. 
 
 
-
-
-BlueFog
-=======
-
-.. image:: https://github.com/Bluefog-Lib/bluefog/actions/workflows/ci.yml/badge.svg
-    :target: https://github.com/Bluefog-Lib/bluefog/actions/workflows/ci.yml/badge.svg
-
-.. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-    :target: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-    :alt: License
-
-.. image:: https://zenodo.org/badge/225537951.svg
-   :target: https://zenodo.org/badge/latestdoi/225537951
-
-.. image:: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
-    :target: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
-    
-.. raw:: html
-
-    <p align="center"><img src="https://user-images.githubusercontent.com/65107588/82258821-62d66b80-990f-11ea-9393-bf5456af67e6.png" alt="Logo" width="450"/></p>
-    
-BlueFog is a high-performance distributed training framework built with **decentralized optimization** algorithms. The goal of Bluefog is to make decentralized algorithms easy to use, fault-tolerant, friendly to heterogeneous environment, and even faster than training frameworks built with parameter server, or ring-allreduce.
-
-Performance
+Manual
 -----------
 
-Below are the charts representing the performance of BlueFog that was done on ResNet50 benchmark. Each machine has 8 V100 GPUs (64GB memory) with NVLink-enabled and the inter-connected communication speed is 25Gbps. This is the same hardware setup you can get on AWS_. We test the scaling efficiency with a batch size of 64 for a computationally intensive scenario, and a batch size of 32 for a communicationally intensive scenario.
-
-
-.. raw:: html
-
-    <p align="center"><img src="https://user-images.githubusercontent.com/16711681/98315290-bce5ee80-1f8c-11eb-931f-297a99d958ed.png" alt="Benchmark 1" width="400"/><img src="https://user-images.githubusercontent.com/16711681/98315305-c2433900-1f8c-11eb-91b8-1b17f31dce68.png" alt="Benchmark 2" width="400"/></p>
-
-
-In the figures, the black box represents the ideal linear scaling. It is observed that Bluefog can achieve over 95% scaling efficiency while Horovod reaches around 66% sacling efficiency with batch size 64 on 128 GPUs. For the communicationally intensive scenario with batch size 32, the scaling efficiency gap between Bluefog and Horovod becomes even larger. To 
-understand more details about the BlueFog benchmark, checkout our `performance page <https://bluefog-lib.github.io/bluefog/performance.html>`_.
+ To 
+understand more details about the function of communication, checkout  `performance page <https://bluefog-lib.github.io/bluefog/performance.html>`_.
 
 Overview
 --------
-BlueFog is built with decentralized optimization algorithms. This is fundamentally different from other popular distributed training frameworks, such as DistributedDataParallel provided by PyTorch, Horovod, BytePS, etc. 
+Asyncddp is built with decentralized optimization algorithms. This is fundamentally different from other popular distributed training frameworks, such as DistributedDataParallel provided by PyTorch, Horovod, BytePS, etc. 
 
 In each communication stage, neither the typical star-shaped parameter-server toplogy, nor the pipelined ring-allreduce topology is used. Instead, BlueFog will exploit a virtual and probably dynamic network topology (that can be in any shape) to achieve most communication efficiency.
 
@@ -64,7 +32,7 @@ one neighbor only in one iteration and select next neighbor in next iteration as
 
     <p align="center"><img src="https://user-images.githubusercontent.com/16711681/97928035-04654400-1d1b-11eb-91d2-2da890b4522e.png" alt="one-peer-exp2" width="650"/></p>
 
-In this scenario, the communcation cost for each iteration is only one unit delay, one standard parameter size to transmit and no communication conflict happens, which is better than what parameter server or ring-allreduce promises. As for loss and accuracy guarantees, please check out our theoratical paper and our `slides <https://github.com/Bluefog-Lib/bluefog/blob/master/resources/Faster_Learning_over_Networks_and_BlueFog.pdf>`_ preseneted on MLA'20. [A full tutorial will be added in future].
+In this scenario, the communcation cost for each iteration is only one unit delay, one standard parameter size to transmit and no communication conflict happens, which is better than what parameter server or ring-allreduce promises. 
 
 
 Quick Start
