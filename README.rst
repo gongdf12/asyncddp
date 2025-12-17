@@ -40,7 +40,10 @@ Quick Start
 
 First, make sure your environment is with ``python>=3.7`` and ``openmpi >= 4.0``.
 Then, install Bluefog with: ``pip install --no-cache-dir bluefog`` or
-``BLUEFOG_WITH_NCCL=1 pip install bluefog`` if NCCL is supported (``NCCL>=2.7``). Check
+``BLUEFOG_WITH_NCCL=1 pip install bluefog`` if NCCL is supported (``NCCL>=2.7``).It should be noted that after installation, please check if the header file can be seen by the compiler.Use ``ls -l /usr/lib/libnccl*   
+# or
+ls -l /usr/local/nccl-<version>/lib/libnccl*   
+`` to confirm . Check
 the `install_bluefog <https://bluefog-lib.github.io/bluefog/install.html>`_ page if you need more information or other install options.
 
 Using BlueFog With Jupyter Notebook
