@@ -1,6 +1,6 @@
 Asyncddp
 ========
-Asyncddp  is a package used for asynchronous model training, based on the Bluefog package for communication. It must be mentioned that due to the lack of good support for nccl in the original Bluefog package and the version issue of torch, I have conducted secondary development on it, including improving the asynchronous communication logic based on nccl, being compatible with the latest torch, and adding DDP to facilitate model training. I have provided an example of asynchronous model training in 'example/test_async-py'. The communication part of this package adopts Bluefog's communication logic. Below are some introductions of Bluefog.
+Asyncddp  is a package used for asynchronous model training. I have provided an example of asynchronous model training in 'example/test_async-py'. 
 
 
 
