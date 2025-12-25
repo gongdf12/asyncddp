@@ -478,6 +478,7 @@ int DoWinSync(::torch::Tensor tensor, const std::string& name,
         common::win_lock.use = 0;
         // common::WindowMutexRelease(name, neighbor_ranks, device, /*is_sync=*/true);
       return 0;
+     }
     }
   } else {
     // Sum over neighbors' tensors happens in-place.
@@ -521,8 +522,8 @@ int DoWinSync(::torch::Tensor tensor, const std::string& name,
   timeline_ptr->ActivityEnd(name);  // WIN_SYNC_COMPUTE_AVERAGE
 
   return 1;
-};
- }
+
+}
 
 int DoWinFree(const std::string& name) {
   ThrowIfError(common::CheckInitialized());
