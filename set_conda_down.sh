@@ -104,7 +104,9 @@ done
 log "> Found: $NCCL_H"
 log "> Found: $FB_H"
 log "> Found: $NCCL_LIBDIR/libnccl.so*"
-
+# 4. 升级构建工具 (防止 Python 3.13 下的兼容性问题)
+echo "> 升级构建工具: setuptools, wheel..."
+pip install --upgrade setuptools wheel
 # Env vars for building BlueFog with NCCL.
 export BLUEFOG_WITH_NCCL=1
 export BLUEFOG_NCCL_LINK=SHARED
