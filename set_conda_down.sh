@@ -125,26 +125,27 @@ if command -v python >/dev/null 2>&1; then
 fi
 
 # Build/install BlueFog from source in this repo.
+# Build/install BlueFog from source in this repo.
 if [ "${SKIP_PIP:-0}" = "1" ]; then
   log "> SKIP_PIP=1 set; skipping 'pip install -e .'."
-  exit 0
-fi
-
-REPO_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-[ -f "$REPO_ROOT/setup.py" ] || die "Cannot find $REPO_ROOT/setup.py (are you in the BlueFog repo?)"
-
-cd "$REPO_ROOT"
-
-if command -v pip >/dev/null 2>&1; then
-  PIP=pip
 else
-  need_cmd python
-  PIP="python -m pip"
+  REPO_ROOT="${REPO_ROOT:-$(pwd)}"
+  [ -f "$REPO_ROOT/setup.py" ] || die "Cannot find $REPO_ROOT/setup.py. Run this script from the repo root (your current terminal directory), or set REPO_ROOT=/path/to/repo."
+
+  cd "$REPO_ROOT"
+
+  if command -v pip >/dev/null 2>&1; then
+    PIP=pip
+  else
+    need_cmd python
+    PIP="python -m pip"
+  fi
+
+  log "> Running: $PIP install -e . --no-build-isolation"
+  $PIP install -e . --no-build-isolation
 fi
 
-log "> Running: $PIP install -e . --no-build-isolation"
-$PIP install -e . --no-build-isolation
+log "> Note: env vars only persist in your current shell if sourced, e.g.:"
+log "  SKIP_PIP=1 . scripts/setup_bluefog_nccl_conda.sh"
 
-log "> Done. If you want these env vars in your current shell, run:"
-log "  source scripts/setup_bluefog_nccl_conda.sh"
 
