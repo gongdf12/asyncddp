@@ -115,7 +115,7 @@ export BLUEFOG_NCCL_LIB="$NCCL_LIBDIR"
 # Help compilers find headers/libs.
 export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
 export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
-
+export CPLUS_INCLUDE_PATH="$(python -c 'import torch; from torch.utils.cpp_extension import include_paths; print(":".join(include_paths()))'):${CPLUS_INCLUDE_PATH:-}"
 # 5. 执行 pip 安装
 if [ ! -f "setup.py" ]; then
     echo "ERROR: setup.py not found in current directory."
@@ -124,6 +124,5 @@ if [ ! -f "setup.py" ]; then
 fi
 
 echo "> Running pip install..."
-export PIP_NO_BUILD_ISOLATION=1
-export PIP_USE_PEP517=0
-python -m pip install -e . --no-deps
+
+python -m pip install -e . --no-build-isolation
