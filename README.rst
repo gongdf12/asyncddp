@@ -2,7 +2,8 @@ Asyncddp
 ========
 
 Asyncddp is a package designed for asynchronous model training. An example of asynchronous model training is provided in ``example/test_async-py``.
-When running these files, it is necessary to modify the machine parameters in the script
+When running these files, it is necessary to modify the machine parameters in the script.
+
 Manual
 ------
 
