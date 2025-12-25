@@ -56,7 +56,31 @@ Then, install Bluefog.
       ls -l /usr/lib/libnccl*
       # OR
       ls -l /usr/local/nccl-<version>/lib/libnccl*
+Another way to install.
 
+### Prerequisites
+
+* **Linux** (Recommended for distributed training)
+* **Conda** (Anaconda or Miniconda)
+* **pytorch**
+* **NVIDIA GPU + CUDA** (Required for DDP)
+
+### Installation
+
+1.  **Clone the Repository**
+    ```bash
+    git clone [https://github.com/gongdf12/asyncddp.git](https://github.com/gongdf12/asyncddp.git)
+    cd asyncddp
+    ```
+
+2.  **Configure Environment**
+    We provide an automated script `set_conda_down.sh` to create the Conda environment and install all necessary dependencies.
+    ```bash
+    # Grant execute permission
+    chmod +x set_conda_down.sh
+    # Run the setup script
+    ./set_conda_down.sh
+    ```
   
 Using BlueFog With Jupyter Notebook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -129,73 +153,3 @@ Checkout our `API explanation page <https://bluefog-lib.github.io/bluefog/bluefo
 
 The Bluefog source code was based off the `Horovod <https://github.com/horovod/horovod>`_ repository. Hence, BlueFog shares many common features with Horovod such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. We want to express our gratitude to the Horovod team.
 
-Materials
----------
-
-*Bluefog: Make decentralized algorithms practical for optimization and deep learning*. B. Ying, K. Yuan, H. Hu, Y. Chen, and W. Yin. arXiv preprint arXiv:2111.04287, 2021. `[link] <https://arxiv.org/abs/2111.04287>`_
-
-*Faster Learning over Networks and BlueFog*, BlueFog Team, invited talk at MLA, 2020 `[slides] <https://github.com/Bluefog-Lib/bluefog/blob/master/resources/Faster_Learning_over_Networks_and_BlueFog.pdf>`_
-
-Cite
-----
-
-Bluefog is uploaded to Zenodo. An equivalent BibTex format reference is below for all versions:
-
-.. code-block:: bibtex
-
-     % System paper
-     @article{bluefog,
-       author        = {Ying, Bicheng and Yuan, Kun and Hu, Hanbin and Chen, Yiming and Yin, Wotao},
-       title         = {BlueFog: Make Decentralized Algorithms Practical for Optimization and Deep Learning},
-       journal       = {arXiv preprint arXiv:2111.04287},
-       year          = {2021},
-     }
-
-     % Theoretical Papers
-     @article{ying2021exponential,
-       title={Exponential Graph is Provably Efficient for Decentralized Deep Training},
-       author={Ying, Bicheng and Yuan, Kun and Chen, Yiming and Hu, Hanbin and Pan, Pan and Yin, Wotao},
-       journal={Advances in Neural Information Processing Systems (NeurIPS), 34.
-                Also available at arXiv:2110.13363},
-       year={2021}
-     }
-
-     @inproceedings{yuan2021decentlam,
-        title={DecentLaM: Decentralized Momentum SGD for Large-Batch Deep Training},
-        author={Yuan, Kun and Chen, Yiming and Huang, Xinmeng and Zhang, Yingya and Pan, Pan and Xu, Yinghui and Yin, Wotao},
-        booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
-        pages={3029--3039},
-        year={2021}
-     }
-
-     @article{yuan2020influence,
-        title={On the influence of bias-correction on distributed stochastic optimization},
-        author={Yuan, Kun and Alghunaim, Sulaiman A and Ying, Bicheng and Sayed, Ali H},
-        journal={IEEE Transactions on Signal Processing},
-        volume={68},
-        pages={4352--4367},
-        year={2020},
-        publisher={IEEE}
-     }
-
-Troubleshooting
----------------
-
-Import bluefog.torch failed
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you see the error message below, it means that bluefog is not installed properly. Please install bluefog using the github source and recompile bluefog (e.g. ``make clean && make -j $(nproc) && BLUEFOG_WITH_NCCL=1 pip install .``).
-
-.. code-block:: python
-
-    import bluefog.torch as bf
-    Traceback (most recent call last):
-    File "<stdin>", line 1, in <module>
-    File "/usr/local/lib/python3.7/dist-packages/bluefog/torch/__init__.py", line 34, in <module>
-        from bluefog.torch.mpi_ops import init, shutdown
-    File "/usr/local/lib/python3.7/dist-packages/bluefog/torch/mpi_ops.py", line 23, in <module>
-        from bluefog.torch import mpi_lib  # C library
-    ImportError: /usr/local/lib/python3.7/dist-packages/bluefog/torch/mpi_lib.cpython-37m-x86_64-linux-gnu.so: undefined symbol: _ZN7bluefog6common14NCCLController9AllreduceERNS0_16TensorTableEntryE
-
-.. _AWS: https://aws.amazon.com/about-aws/whats-new/2018/12/introducing-amazon-ec2-p3dn-instances-our-most-powerful-gpu-instance-yet/
-.. _examples: https://github.com/Bluefog-Lib/bluefog/tree/master/examples
