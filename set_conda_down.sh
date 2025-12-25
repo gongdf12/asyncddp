@@ -116,36 +116,14 @@ export BLUEFOG_NCCL_LIB="$NCCL_LIBDIR"
 export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
 export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
 
-# Optional: show the pip-provided NCCL wheel if present (informational only).
-if command -v python >/dev/null 2>&1; then
-  python -m pip show nvidia-nccl-cu12 >/dev/null 2>&1 && {
-    log "> Detected pip package: nvidia-nccl-cu12"
-    python -m pip show nvidia-nccl-cu12 | awk 'NR<=8{print} NR==8{exit}' || true
-  }
+# 5. 执行 pip 安装
+if [ ! -f "setup.py" ]; then
+    echo "ERROR: setup.py not found in current directory."
+    echo "Please run this script from the project root directory."
+    exit 1
 fi
 
-# Build/install BlueFog from source in this repo.
-# Build/install BlueFog from source in this repo.
-if [ "${SKIP_PIP:-0}" = "1" ]; then
-  log "> SKIP_PIP=1 set; skipping 'pip install -e .'."
-else
-  REPO_ROOT="${REPO_ROOT:-$(pwd)}"
-  [ -f "$REPO_ROOT/setup.py" ] || die "Cannot find $REPO_ROOT/setup.py. Run this script from the repo root (your current terminal directory), or set REPO_ROOT=/path/to/repo."
+echo "> Running pip install..."
+pip install -e . --no-build-isolation
 
-  cd "$REPO_ROOT"
-
-  if command -v pip >/dev/null 2>&1; then
-    PIP=pip
-  else
-    need_cmd python
-    PIP="python -m pip"
-  fi
-
-  log "> Running: $PIP install -e . --no-build-isolation"
-  $PIP install -e . --no-build-isolation
-fi
-
-log "> Note: env vars only persist in your current shell if sourced, e.g.:"
-log "  SKIP_PIP=1 . scripts/setup_bluefog_nccl_conda.sh"
-
-
+echo "> Installation complete."
