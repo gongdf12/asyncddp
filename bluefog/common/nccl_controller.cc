@@ -142,10 +142,13 @@ void NCCLContext::CleanWindowCommunicators() {
   for (int i = 0; i < (int)nccl_win_active_comms.size(); i++) {
     CUDACHECK(cudaStreamDestroy(nccl_win_active_streams[i]));
     CUDACHECK(cudaStreamDestroy(nccl_win_passive_streams[i]));
-    if (i != self_rank) {
-      NCCLCHECK(ncclCommDestroy(nccl_win_active_comms[i]));
-      NCCLCHECK(ncclCommDestroy(nccl_win_passive_comms[i]));
-    }
+    if (self_rank < i) {
+        NCCLCHECK(ncclCommDestroy(nccl_win_active_comms[i]));
+        NCCLCHECK(ncclCommDestroy(nccl_win_passive_comms[i]));
+      } else {
+        NCCLCHECK(ncclCommDestroy(nccl_win_passive_comms[i]));
+        NCCLCHECK(ncclCommDestroy(nccl_win_active_comms[i]));
+      }
   }
   nccl_win_active_streams.clear();
   nccl_win_passive_streams.clear();
