@@ -126,4 +126,4 @@ fi
 echo "> Running pip install..."
 export PIP_NO_BUILD_ISOLATION=1
 export PIP_USE_PEP517=0
-python -m pip3 install -e . --no-use-pep517 --no-deps
+python -m pip install -e . --no-use-pep517 --no-deps
