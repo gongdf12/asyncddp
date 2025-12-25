@@ -39,14 +39,14 @@ Then, install Bluefog.
 
 .. code-block:: shell
 
-   pip install --no-cache-dir bluefog
+   pip install --no-cache-dir Asyncddp
 
 **Install with NCCL Support:**
 (If NCCL is supported, i.e., ``NCCL>=2.7``)
 
 .. code-block:: shell
 
-   BLUEFOG_WITH_NCCL=1 pip install bluefog
+   BLUEFOG_WITH_NCCL=1 pip install Asyncddp
 
 .. note::
 
