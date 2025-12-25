@@ -124,6 +124,6 @@ if [ ! -f "setup.py" ]; then
 fi
 
 echo "> Running pip install..."
-pip install -e . --no-build-isolation
-
-echo "> Installation complete."
+export PIP_NO_BUILD_ISOLATION=1
+export PIP_USE_PEP517=0
+python -m pip3 install -e . --no-use-pep517 --no-deps
