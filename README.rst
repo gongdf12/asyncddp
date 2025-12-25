@@ -1,141 +1,119 @@
 Asyncddp
 ========
-Asyncddp  is a package used for asynchronous model training, based on the Bluefog package for communication. It must be mentioned that due to the lack of good support for nccl in the original Bluefog package and the version issue of torch, I have conducted secondary development on it, including improving the asynchronous communication logic based on nccl, being compatible with the latest torch, and adding DDP to facilitate model training. I have provided an example of asynchronous model training in 'example/test_async-py'. The communication part of this package adopts Bluefog's communication logic. Below are some introductions of Bluefog.
 
+Asyncddp is a package designed for asynchronous model training. An example of asynchronous model training is provided in ``example/test_async-py``.
 
+Manual
+------
 
-
-BlueFog
-=======
-
-.. image:: https://github.com/Bluefog-Lib/bluefog/actions/workflows/ci.yml/badge.svg
-    :target: https://github.com/Bluefog-Lib/bluefog/actions/workflows/ci.yml/badge.svg
-
-.. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-    :target: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-    :alt: License
-
-.. image:: https://zenodo.org/badge/225537951.svg
-   :target: https://zenodo.org/badge/latestdoi/225537951
-
-.. image:: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
-    :target: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
-    
-.. raw:: html
-
-    <p align="center"><img src="https://user-images.githubusercontent.com/65107588/82258821-62d66b80-990f-11ea-9393-bf5456af67e6.png" alt="Logo" width="450"/></p>
-    
-BlueFog is a high-performance distributed training framework built with **decentralized optimization** algorithms. The goal of Bluefog is to make decentralized algorithms easy to use, fault-tolerant, friendly to heterogeneous environment, and even faster than training frameworks built with parameter server, or ring-allreduce.
-
-Performance
------------
-
-Below are the charts representing the performance of BlueFog that was done on ResNet50 benchmark. Each machine has 8 V100 GPUs (64GB memory) with NVLink-enabled and the inter-connected communication speed is 25Gbps. This is the same hardware setup you can get on AWS_. We test the scaling efficiency with a batch size of 64 for a computationally intensive scenario, and a batch size of 32 for a communicationally intensive scenario.
-
-
-.. raw:: html
-
-    <p align="center"><img src="https://user-images.githubusercontent.com/16711681/98315290-bce5ee80-1f8c-11eb-931f-297a99d958ed.png" alt="Benchmark 1" width="400"/><img src="https://user-images.githubusercontent.com/16711681/98315305-c2433900-1f8c-11eb-91b8-1b17f31dce68.png" alt="Benchmark 2" width="400"/></p>
-
-
-In the figures, the black box represents the ideal linear scaling. It is observed that Bluefog can achieve over 95% scaling efficiency while Horovod reaches around 66% sacling efficiency with batch size 64 on 128 GPUs. For the communicationally intensive scenario with batch size 32, the scaling efficiency gap between Bluefog and Horovod becomes even larger. To 
-understand more details about the BlueFog benchmark, checkout our `performance page <https://bluefog-lib.github.io/bluefog/performance.html>`_.
+To understand the details of the communication functions, please checkout the `performance page <https://bluefog-lib.github.io/bluefog/performance.html>`_.
 
 Overview
 --------
-BlueFog is built with decentralized optimization algorithms. This is fundamentally different from other popular distributed training frameworks, such as DistributedDataParallel provided by PyTorch, Horovod, BytePS, etc. 
 
-In each communication stage, neither the typical star-shaped parameter-server toplogy, nor the pipelined ring-allreduce topology is used. Instead, BlueFog will exploit a virtual and probably dynamic network topology (that can be in any shape) to achieve most communication efficiency.
+Asyncddp is built upon decentralized optimization algorithms. This is fundamentally different from other popular distributed training frameworks, such as DistributedDataParallel provided by PyTorch, Horovod, BytePS, etc.
 
+In each communication stage, neither the typical star-shaped parameter-server topology nor the pipelined ring-allreduce topology is used. Instead, BlueFog exploits a virtual and potentially dynamic network topology (which can take any shape) to achieve maximum communication efficiency.
 
-..
-    
-    Main Idea: Replace expensive allreduce averaging over gradients by cheap neighbor averaging over parameters
+**Main Idea: Replace expensive allreduce averaging over gradients with cheap neighbor averaging over parameters.**
 
-For each training iteration, one process (or agent) will update its model with information received from its **direct** neighbors defined by the virtual topology. It is observed all communications only occur over the predefied virtual topolgy and no global communication is required. This is why the algorithms is named *decentralized*. 
-Decentralized training algorithms are proved in literature that it can converge to the same solution as their standard centralized counterparts. 
+For each training iteration, one process (or agent) will update its model using information received from its **direct** neighbors as defined by the virtual topology. It is observed that all communication occurs only over the predefined virtual topology, and no global communication is required. This is why the algorithm is named *decentralized*. Decentralized training algorithms have been proven in literature to converge to the same solution as their standard centralized counterparts.
 
-The topology decides the communication efficiency. BlueFog supports both **static** topology and **dynamic** topology usages. After tremendous trials, the dynamic Exponential-2 graph is observed to achieve the best performance
-if the number of agents is the power of 2, such as 4, 32, 128 agents. In Exponential-2 graph, each agent will 
-communicates with the neighbors that are  2 :sup:`0`, 2 :sup:`1`, ..., 2 :sup:`t` hops away. **Dynamic** toplogy means all agents select
-one neighbor only in one iteration and select next neighbor in next iteration as illustrated in the following figure:
+The topology determines communication efficiency. BlueFog supports both **static** topology and **dynamic** topology usage. After extensive trials, the dynamic Exponential-2 graph was observed to achieve the best performance if the number of agents is a power of 2 (e.g., 4, 32, 128 agents). In an Exponential-2 graph, each agent communicates with neighbors that are :math:`2^0, 2^1, ..., 2^t` hops away. **Dynamic** topology means all agents select only one neighbor in one iteration and select the next neighbor in the next iteration, as illustrated in the following figure:
 
 .. raw:: html
 
     <p align="center"><img src="https://user-images.githubusercontent.com/16711681/97928035-04654400-1d1b-11eb-91d2-2da890b4522e.png" alt="one-peer-exp2" width="650"/></p>
 
-In this scenario, the communcation cost for each iteration is only one unit delay, one standard parameter size to transmit and no communication conflict happens, which is better than what parameter server or ring-allreduce promises. As for loss and accuracy guarantees, please check out our theoratical paper and our `slides <https://github.com/Bluefog-Lib/bluefog/blob/master/resources/Faster_Learning_over_Networks_and_BlueFog.pdf>`_ preseneted on MLA'20. [A full tutorial will be added in future].
-
+In this scenario, the communication cost for each iteration is only one unit of delay and one standard parameter size to transmit. No communication conflicts occur, which is superior to the guarantees provided by parameter server or ring-allreduce methods.
 
 Quick Start
 -----------
 
-First, make sure your environment is with ``python>=3.7`` and ``openmpi >= 4.0``.
-Then, install Bluefog with: ``pip install --no-cache-dir bluefog`` or
-``BLUEFOG_WITH_NCCL=1 pip install bluefog`` if NCCL is supported (``NCCL>=2.7``). Check
-the `install_bluefog <https://bluefog-lib.github.io/bluefog/install.html>`_ page if you need more information or other install options.
+First, ensure your environment meets the following requirements: ``python>=3.7`` and ``openmpi >= 4.0``.
+
+Then, install Bluefog.
+
+**Standard Install:**
+
+.. code-block:: shell
+
+   pip install --no-cache-dir bluefog
+
+**Install with NCCL Support:**
+(If NCCL is supported, i.e., ``NCCL>=2.7``)
+
+.. code-block:: shell
+
+   BLUEFOG_WITH_NCCL=1 pip install bluefog
+
+.. note::
+
+   It should be noted that after installation, you must check if the header file is visible to the compiler. Use the following commands to confirm:
+
+   .. code-block:: shell
+
+      ls -l /usr/lib/libnccl*
+      # OR
+      ls -l /usr/local/nccl-<version>/lib/libnccl*
+
+   Check the `install_bluefog <https://bluefog-lib.github.io/bluefog/install.html>`_ page if you need more information or other install options.
 
 Using BlueFog With Jupyter Notebook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-BlueFog is able to run interactively with Jupyte Notebook. Please check out our `hello world notebook <https://github.com/Bluefog-Lib/bluefog/blob/master/examples/interactive_bluefog_helloworld.ipynb>`_ or other notebooks in the example folder to start with.
-Interacitve BlueFog is great for research and algorithm experiment. For the large-scale machine learning problem, we recommand
-to use BlueFog with script.
+BlueFog is able to run interactively with Jupyter Notebook. Please check out our `hello world notebook <https://github.com/Bluefog-Lib/bluefog/blob/master/examples/interactive_bluefog_helloworld.ipynb>`_ or other notebooks in the example folder to start.
+
+Interactive BlueFog is great for research and algorithmic experiments. For large-scale machine learning problems, we recommend using BlueFog with a script.
 
 Using BlueFog With Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We provide high-level wrapper for torch optimizer. You just need to modify
-the existing script to distributed implementation is wrapping the optimizer
-with our ``DistributedNeighborAllreduceOptimizer``,
-then run it through ``bfrun``. That is it!
+We provide a high-level wrapper for the torch optimizer. To convert an existing script to a distributed implementation, you simply need to wrap the optimizer with our ``DistributedNeighborAllreduceOptimizer`` and run it through ``bfrun``. That is it!
 
 .. code-block:: python
 
-   # Execute Python functions in parallel through
+   # Execute Python functions in parallel through:
    # bfrun -np 4 python file.py
 
-   import torch 
+   import torch
    import bluefog.torch as bf
-   ...
+   # ...
    bf.init()
    optimizer = optim.SGD(model.parameters(), lr=lr * bf.size())
    optimizer = bf.DistributedNeighborAllreduceOptimizer(
-      optimizer, model=model
+       optimizer, model=model
    )
-   ...
-Previous example is for static topology usage. For dynamic topology case, you need a little bit
-more code:
+   # ...
+
+The previous example is for static topology usage. For the dynamic topology case, you need a little more code:
 
 .. code-block:: python
-   
-  from bluefog.common import topology_util
-  ...
-  # Same setup code as previous snippets
-  dynamic_neighbors_gen = topology_util.GetInnerOuterExpo2DynamicSendRecvRanks(
-            bf.size(), local_size=bf.local_size(), self_rank=bf.rank())
-  def dynamic_topology_update(epoch, batch_idx):
-    send_neighbors, recv_neighbors = next(dynamic_neighbors_gen)
-    avg_weight = 1/(len(recv_neighbors) + 1)
-    optimizer.send_neighbors = to_neighbors
-    optimizer.neighbor_weights = {r: avg_weight for r in recv_neighbors}
-    optimizer.self_weight = avg_weight
 
-  # Torch training code
-  for epoch in range(epochs):
-    for batch_idx, (data, target) in enumerate(train_loader):
-        dynamic_topology_update(epoch, batch_idx)
-        ...
-        loss.backward()
-        optimizer.step()
+   from bluefog.common import topology_util
+   # ...
+   # Same setup code as previous snippets
+   dynamic_neighbors_gen = topology_util.GetInnerOuterExpo2DynamicSendRecvRanks(
+       bf.size(), local_size=bf.local_size(), self_rank=bf.rank())
 
-Check our BlueFog `dynamic topology neighbor averaging <https://bluefog-lib.github.io/bluefog/neighbor_average.html>`_
-page to see more on how to control and use topology. See BlueFog `examples`_ folder for full code.
+   def dynamic_topology_update(epoch, batch_idx):
+       send_neighbors, recv_neighbors = next(dynamic_neighbors_gen)
+       avg_weight = 1/(len(recv_neighbors) + 1)
+       optimizer.send_neighbors = to_neighbors
+       optimizer.neighbor_weights = {r: avg_weight for r in recv_neighbors}
+       optimizer.self_weight = avg_weight
 
+   # Torch training code
+   for epoch in range(epochs):
+       for batch_idx, (data, target) in enumerate(train_loader):
+           dynamic_topology_update(epoch, batch_idx)
+           # ...
+           loss.backward()
+           optimizer.step()
 
-We also provide lots of low-level functions, which you can use those as building
-blocks to construct your own distributed training algorithm. The following example
-illustrates how to run a simple consensus algorithm through bluefog.
+Check our BlueFog `dynamic topology neighbor averaging <https://bluefog-lib.github.io/bluefog/neighbor_average.html>`_ page to see more on how to control and use topology. See the BlueFog `examples`_ folder for full code.
+
+We also provide many low-level functions which you can use as building blocks to construct your own distributed training algorithms. The following example illustrates how to run a simple consensus algorithm through Bluefog.
 
 .. code-block:: python
 
@@ -145,35 +123,36 @@ illustrates how to run a simple consensus algorithm through bluefog.
    bf.init()
    x = torch.Tensor([bf.rank()])
    for _ in range(100):
-      x = bf.neighbor_allreduce(x)
+       x = bf.neighbor_allreduce(x)
    print(f"{bf.rank()}: Average value of all ranks is {x}")
 
 Checkout our `API explanation page <https://bluefog-lib.github.io/bluefog/bluefog_ops.html>`_ to see all supported *synchronous* and *asynchronous* features.
 
-The Bluefog source code was based off `Horovod <https://github.com/horovod/horovod>`_ repository. Hence, BlueFog shared lots of common features from Horovod such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. Here, we want to express our gratitude to the Horovod team. 
+The Bluefog source code was based off the `Horovod <https://github.com/horovod/horovod>`_ repository. Hence, BlueFog shares many common features with Horovod such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. We want to express our gratitude to the Horovod team.
 
 Materials
 ---------
-*Bluefog: Make decentralized algorithms practical for optimization and deep learning*. B. Ying, K. Yuan, H. Hu, Y. Chen, and W. Yin.  arXiv preprint arXiv:2111.04287, 2021. `[link] <https://arxiv.org/abs/2111.04287>`_
+
+*Bluefog: Make decentralized algorithms practical for optimization and deep learning*. B. Ying, K. Yuan, H. Hu, Y. Chen, and W. Yin. arXiv preprint arXiv:2111.04287, 2021. `[link] <https://arxiv.org/abs/2111.04287>`_
 
 *Faster Learning over Networks and BlueFog*, BlueFog Team, invited talk at MLA, 2020 `[slides] <https://github.com/Bluefog-Lib/bluefog/blob/master/resources/Faster_Learning_over_Networks_and_BlueFog.pdf>`_
 
-
 Cite
----------
-Bluefog is uploaded to Zenodo. An equivalent BibTex format reference is below for all the versions:
-  
+----
+
+Bluefog is uploaded to Zenodo. An equivalent BibTex format reference is below for all versions:
+
 .. code-block:: bibtex
 
      % System paper
      @article{bluefog,
-       author       = {Ying, Bicheng and Yuan, Kun and Hu, Hanbin and Chen, Yiming and Yin, Wotao},
-       title        = {BlueFog: Make Decentralized Algorithms Practical for Optimization and Deep Learning},
-       journal.     = {arXiv preprint arXiv:2111.04287},
-       year         = {2021},
+       author        = {Ying, Bicheng and Yuan, Kun and Hu, Hanbin and Chen, Yiming and Yin, Wotao},
+       title         = {BlueFog: Make Decentralized Algorithms Practical for Optimization and Deep Learning},
+       journal       = {arXiv preprint arXiv:2111.04287},
+       year          = {2021},
      }
 
-     % Theoratical Papers
+     % Theoretical Papers
      @article{ying2021exponential,
        title={Exponential Graph is Provably Efficient for Decentralized Deep Training},
        author={Ying, Bicheng and Yuan, Kun and Chen, Yiming and Hu, Hanbin and Pan, Pan and Yin, Wotao},
@@ -201,11 +180,12 @@ Bluefog is uploaded to Zenodo. An equivalent BibTex format reference is below fo
      }
 
 Troubleshooting
----------
-Import bluefog.torch failed
-^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------
 
-If you see the error message below, it means that bluefog is not installed properly. Please install bluefog using github source and recompile bluefog （e.g. make clean && make -j $(nproc)  && BLUEFOG_WITH_NCCL=1 pip install .）
+Import bluefog.torch failed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you see the error message below, it means that bluefog is not installed properly. Please install bluefog using the github source and recompile bluefog (e.g. ``make clean && make -j $(nproc) && BLUEFOG_WITH_NCCL=1 pip install .``).
 
 .. code-block:: python
 
@@ -217,7 +197,6 @@ If you see the error message below, it means that bluefog is not installed prope
     File "/usr/local/lib/python3.7/dist-packages/bluefog/torch/mpi_ops.py", line 23, in <module>
         from bluefog.torch import mpi_lib  # C library
     ImportError: /usr/local/lib/python3.7/dist-packages/bluefog/torch/mpi_lib.cpython-37m-x86_64-linux-gnu.so: undefined symbol: _ZN7bluefog6common14NCCLController9AllreduceERNS0_16TensorTableEntryE
-
 
 .. _AWS: https://aws.amazon.com/about-aws/whats-new/2018/12/introducing-amazon-ec2-p3dn-instances-our-most-powerful-gpu-instance-yet/
 .. _examples: https://github.com/Bluefog-Lib/bluefog/tree/master/examples
