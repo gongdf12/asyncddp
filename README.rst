@@ -69,7 +69,7 @@ Another way to install.
 
 1.  **Clone the Repository**
     ```bash
-    git clone [https://github.com/gongdf12/asyncddp.git](https://github.com/gongdf12/asyncddp.git)
+    git clone https://github.com/gongdf12/asyncddp.git
     cd asyncddp
     ```
 
