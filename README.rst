@@ -30,7 +30,7 @@ In this scenario, the communication cost for each iteration is only one unit of 
 Quick Start
 -----------
 
-First, ensure your environment meets the following requirements: ``python>=3.7`` and ``openmpi >= 4.0``.
+First, ensure your environment meets the following requirements: ``python>=3.12.7`` and ``openmpi >= 4.0``，``nccl== 2.28.9``, ``flatbuffers=1.12.0``, ``boost>=1.74.0``.
 
 Then, install Bluefog.
 
@@ -49,7 +49,7 @@ Then, install Bluefog.
 
 .. note::
 
-   It should be noted that after installation, you must check if the header file is visible to the compiler. Use the following commands to confirm:
+   It should be noted that after installation, you must check if the header file is visible to the compiler. Use the following commands to confirm nccl:
 
    .. code-block:: shell
 
@@ -57,8 +57,7 @@ Then, install Bluefog.
       # OR
       ls -l /usr/local/nccl-<version>/lib/libnccl*
 
-   Check the `install_bluefog <https://bluefog-lib.github.io/bluefog/install.html>`_ page if you need more information or other install options.
-
+  
 Using BlueFog With Jupyter Notebook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
