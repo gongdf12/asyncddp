@@ -114,8 +114,21 @@ export BLUEFOG_NCCL_HOME="$CONDA_PREFIX"
 export BLUEFOG_NCCL_INCLUDE="$CONDA_PREFIX/include"
 export BLUEFOG_NCCL_LIB="$NCCL_LIBDIR"
 # 2. 获取 Torch 的库路径 (这是最关键的一步)
-TORCH_LIB_PATH=$(python -c 'import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), "lib"))')
-TORCH_INCLUDE_PATH=$(python -c 'import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), "include"))')
+
+
+# 2. 获取 Torch 路径（增加错误检查）
+# 使用 python 命令获取路径，如果 torch 没安装，这里会报错并退出
+
+# --- 2. 动态获取 Torch 路径 ---
+if ! python -c "import torch" &> /dev/null; then
+    echo "ERROR: PyTorch not found in the current python environment."
+    exit 1
+fi
+
+# 获取 Torch 的 C++ 头文件路径
+TORCH_INC=$(python -c 'import torch; from torch.utils.cpp_extension import include_paths; print(":".join(include_paths()))')
+# 获取 Torch 的库文件路径 (包含 libtorch_python.so)
+TORCH_LIB=$(python -c 'import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), "lib"))')
 # Help compilers find headers/libs.
 # export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
 # export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
