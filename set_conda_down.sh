@@ -157,7 +157,7 @@ export CPLUS_INCLUDE_PATH="$(python -c 'import torch; from torch.utils.cpp_exten
 # export LD_LIBRARY_PATH="$TORCH_LIB:$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
 
 # 4. 执行安装
-echo "> Running pip install with torch library path: $TORCH_LIB_PATH"
+#echo #echo "> Running pip install with torch library path: $TORCH_LIB
 if [ ! -f "setup.py" ]; then
     echo "ERROR: setup.py not found in current directory."
     echo "Please run this script from the project root directory."
