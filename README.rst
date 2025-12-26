@@ -31,57 +31,44 @@ In this scenario, the communication cost for each iteration is only one unit of 
 Quick Start
 -----------
 
-First, ensure your environment meets the following requirements: ``python>=3.12.7`` and ``openmpi >= 4.0``，``nccl== 2.28.9``, ``flatbuffers=1.12.0``, ``boost>=1.74.0``.
+# AsyncDDP Installation
 
-Then, install Bluefog.
+This project implements asynchronous Distributed Data Parallel (DDP) training. Follow the instructions below to set up your environment and install the package.
 
-**Standard Install:**
+## 🛠 Prerequisites
 
-.. code-block:: shell
+Before installation, ensure your system meets the following hardware and software requirements:
 
-   pip install --no-cache-dir Asyncddp
+* **OS**: Linux (Recommended for distributed training)
+* **Hardware**: NVIDIA GPU + CUDA (Required for DDP)
+* **Package Manager**: Conda (Anaconda or Miniconda)
 
-**Install with NCCL Support:**
-(If NCCL is supported, i.e., ``NCCL>=2.7``)
+### Environment Dependencies
+The following versions are strictly required:
 
-.. code-block:: shell
+| Dependency   | Version Requirement |
+| :----------- | :------------------ |
+| **Python** | `>= 3.12.7`         |
+| **OpenMPI** | `>= 4.0`            |
+| **NCCL** | `== 2.28.9`         |
+| **Flatbuffers**| `1.12.0`          |
+| **Boost** | `>= 1.74.0`         |
+| **PyTorch** | Latest compatible   |
 
-   BLUEFOG_WITH_NCCL=1 pip install Asyncddp
+---
 
-.. note::
+## 🚀 Installation Steps
 
-   It should be noted that after installation, you must check if the header file is visible to the compiler. Use the following commands to confirm nccl:
+We provide an automated script to handle environment creation and dependency installation.
 
-   .. code-block:: shell
 
-      ls -l /usr/lib/libnccl*
-      # OR
-      ls -l /usr/local/nccl-<version>/lib/libnccl*
-Another way to install.
-
-### Prerequisites
-
-* **Linux** (Recommended for distributed training)
-* **Conda** (Anaconda or Miniconda)
-* **pytorch**
-* **NVIDIA GPU + CUDA** (Required for DDP)
-
-### Installation
-
-1.  **Clone the Repository**
-    ```bash
-    git clone https://github.com/gongdf12/asyncddp.git
-    cd asyncddp
-    ```
-
-2.  **Configure Environment**
-    We provide an automated script `set_conda_down.sh` to create the Conda environment and install all necessary dependencies.
-    ```bash
-    # Grant execute permission
-    chmod +x set_conda_down.sh
-    # Run the setup script
-    ./set_conda_down.sh
-    ```
+```bash
+git clone https://github.com/gongdf12/asyncddp.git
+cd asyncddp
+# Grant execute permission
+#chmod +x set_conda_down.sh
+# Run the setup script
+bash set_conda_down.sh```
   
 Using BlueFog With Jupyter Notebook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
