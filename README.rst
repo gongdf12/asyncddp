@@ -77,27 +77,9 @@ BlueFog is able to run interactively with Jupyter Notebook. Please check out our
 
 Interactive BlueFog is great for research and algorithmic experiments. For large-scale machine learning problems, we recommend using BlueFog with a script.
 
-Using BlueFog With Script
+Using Asyncddp With Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We provide a high-level wrapper for the torch optimizer. To convert an existing script to a distributed implementation, you simply need to wrap the optimizer with our ``DistributedNeighborAllreduceOptimizer`` and run it through ``bfrun``. That is it!
-
-.. code-block:: python
-
-   # Execute Python functions in parallel through:
-   # bfrun -np 4 python file.py
-
-   import torch
-   import bluefog.torch as bf
-   # ...
-   bf.init()
-   optimizer = optim.SGD(model.parameters(), lr=lr * bf.size())
-   optimizer = bf.DistributedNeighborAllreduceOptimizer(
-       optimizer, model=model
-   )
-   # ...
-
-The previous example is for static topology usage. For the dynamic topology case, you need a little more code:
+ For the dynamic topology case, you need a little more code:
 
 .. code-block:: python
 
@@ -122,9 +104,9 @@ The previous example is for static topology usage. For the dynamic topology case
            loss.backward()
            optimizer.step()
 
-Check our BlueFog `dynamic topology neighbor averaging <https://bluefog-lib.github.io/bluefog/neighbor_average.html>`_ page to see more on how to control and use topology. See the BlueFog `examples`_ folder for full code.
+Check our `dynamic topology neighbor averaging <https://bluefog-lib.github.io/bluefog/neighbor_average.html>`_ page to see more on how to control and use topology. See the BlueFog `examples`_ folder for full code.
 
-We also provide many low-level functions which you can use as building blocks to construct your own distributed training algorithms. The following example illustrates how to run a simple consensus algorithm through Bluefog.
+We also provide many low-level functions which you can use as building blocks to construct your own distributed training algorithms. The following example illustrates how to run a simple consensus algorithm through Asyncddp.
 
 .. code-block:: python
 
@@ -139,5 +121,5 @@ We also provide many low-level functions which you can use as building blocks to
 
 Checkout our `API explanation page <https://bluefog-lib.github.io/bluefog/bluefog_ops.html>`_ to see all supported *synchronous* and *asynchronous* features.
 
-The Bluefog source code was based off the `Horovod <https://github.com/horovod/horovod>`_ repository. Hence, BlueFog shares many common features with Horovod such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. We want to express our gratitude to the Horovod team.
+The Asyncddp source code was based off the `Bluefog <https://github.com/Bluefog-Lib/bluefog.git>`_ repository. Hence, Asyncddp shares many common features with Bluefog such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. We want to express our gratitude to the Bluefog team.
 
