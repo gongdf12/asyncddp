@@ -51,7 +51,7 @@ The following versions are strictly required:
 | **Python** | `>= 3.12.7`         |
 | **OpenMPI** | `>= 4.0`            |
 | **NCCL** | `== 2.28.9`         |
-| **Flatbuffers**| `1.12.0`          |
+| **Flatbuffers** | `1.12.0`          |
 | **Boost** | `>= 1.74.0`         |
 | **PyTorch** | Latest compatible   |
 
