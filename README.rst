@@ -70,7 +70,7 @@ cd asyncddp
 # Run the setup script
 bash set_conda_down.sh```
   
-Using BlueFog With Jupyter Notebook
+Using Asyncddp With Jupyter Notebook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 BlueFog is able to run interactively with Jupyter Notebook. Please check out our `hello world notebook <https://github.com/Bluefog-Lib/bluefog/blob/master/examples/interactive_bluefog_helloworld.ipynb>`_ or other notebooks in the example folder to start.
