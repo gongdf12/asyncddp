@@ -113,12 +113,23 @@ export BLUEFOG_NCCL_LINK=SHARED
 export BLUEFOG_NCCL_HOME="$CONDA_PREFIX"
 export BLUEFOG_NCCL_INCLUDE="$CONDA_PREFIX/include"
 export BLUEFOG_NCCL_LIB="$NCCL_LIBDIR"
-
+# 2. 获取 Torch 的库路径 (这是最关键的一步)
+TORCH_LIB_PATH=$(python -c 'import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), "lib"))')
+TORCH_INCLUDE_PATH=$(python -c 'import torch; import os; print(os.path.join(os.path.dirname(torch.__file__), "include"))')
 # Help compilers find headers/libs.
-export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
-export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
-export CPLUS_INCLUDE_PATH="$(python -c 'import torch; from torch.utils.cpp_extension import include_paths; print(":".join(include_paths()))'):${CPLUS_INCLUDE_PATH:-}"
+# export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
+# export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
+# export CPLUS_INCLUDE_PATH="$(python -c 'import torch; from torch.utils.cpp_extension import include_paths; print(":".join(include_paths()))'):${CPLUS_INCLUDE_PATH:-}"
 # 5. 执行 pip 安装
+# 2. 合并设置头文件路径 (包含 Torch 和 Conda 环境路径)
+export CPLUS_INCLUDE_PATH="${TORCH_INC}:$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
+
+# 3. 设置库文件路径 (必须包含 Torch 的 lib 目录，否则链接时会找不到 libtorch_python.so)
+export LIBRARY_PATH="$TORCH_LIB:$NCCL_LIBDIR:${LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="$TORCH_LIB:$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
+
+# 4. 执行安装
+echo "> Running pip install with torch library path: $TORCH_LIB_PATH"
 if [ ! -f "setup.py" ]; then
     echo "ERROR: setup.py not found in current directory."
     echo "Please run this script from the project root directory."
