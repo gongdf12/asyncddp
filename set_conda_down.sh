@@ -109,26 +109,29 @@ echo "> 升级构建工具: setuptools, wheel..."
 pip install --upgrade setuptools wheel
 
 
+# 💡 验证是否设置成功
+# echo "CPATH is set to: $CPATH"
 # Env vars for building BlueFog with NCCL.
 export BLUEFOG_WITH_NCCL=1
 export BLUEFOG_NCCL_LINK=SHARED
 export BLUEFOG_NCCL_HOME="$CONDA_PREFIX"
 export BLUEFOG_NCCL_INCLUDE="$CONDA_PREFIX/include"
 export BLUEFOG_NCCL_LIB="$NCCL_LIBDIR"
-
-# 使用 python 命令获取路径，如果 torch 没安装，这里会报错并退出
+# 2. 获取 Torch 的库路径 (这是最关键的一步)
 
 # --- 2. 动态获取 Torch 路径 ---
 if ! python -c "import torch" &> /dev/null; then
     echo "ERROR: PyTorch not found in the current python environment."
     exit 1
 fi
-# Help compilers find headers/libs.
+
+
 export CPLUS_INCLUDE_PATH="$CONDA_PREFIX/include:${CPLUS_INCLUDE_PATH:-}"
 export LD_LIBRARY_PATH="$NCCL_LIBDIR:${LD_LIBRARY_PATH:-}"
 export CPLUS_INCLUDE_PATH="$(python -c 'import torch; from torch.utils.cpp_extension import include_paths; print(":".join(include_paths()))'):${CPLUS_INCLUDE_PATH:-}"
 # 5. 执行 pip 安装
 # 4. 执行安装
+#echo #echo "> Running pip install with torch library path: $TORCH_LIB
 if [ ! -f "setup.py" ]; then
     echo "ERROR: setup.py not found in current directory."
     echo "Please run this script from the project root directory."
