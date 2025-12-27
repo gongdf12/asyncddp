@@ -54,8 +54,10 @@ The following versions are strictly required:
 | **Flatbuffers** | `1.12.0`          |
 | **Boost** | `>= 1.74.0`         |
 | **PyTorch** | Latest compatible   |
-Please use pip to install the complete Pytorch from the official website.
----
+
+**⚠️ Notice**
+Please use pip to install the complete Pytorch from the official website
+
 
 ## 🚀 Installation Steps
 
