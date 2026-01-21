@@ -9,6 +9,7 @@ torch>=1.4.0
 torchvision
 tensorboardX>=1.5
 tqdm>=4.0
+loguru
 #flatbuffers==1.12.1  
 #boost==1.84.0
 #openmpi>=4.0.2
