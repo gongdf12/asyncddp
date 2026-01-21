@@ -55,7 +55,9 @@ The following versions are strictly required:
 | **Boost** | `>= 1.74.0`         |
 | **PyTorch** | Latest compatible   |
 
----
+**⚠️ Notice**
+Please use pip to install the complete Pytorch from the official website
+
 
 ## 🚀 Installation Steps
 
@@ -121,5 +123,11 @@ We also provide many low-level functions which you can use as building blocks to
 
 Checkout our `API explanation page <https://bluefog-lib.github.io/bluefog/bluefog_ops.html>`_ to see all supported *synchronous* and *asynchronous* features.
 
-The Asyncddp source code was based off the `Bluefog <https://github.com/Bluefog-Lib/bluefog.git>`_ repository. Hence, Asyncddp shares many common features with Bluefog such as `timeline <https://bluefog-lib.github.io/bluefog/timeline.html>`_, tensor-fusion, etc. We want to express our gratitude to the Bluefog team.
+## 🙏 Acknowledgments
 
+The AsyncDDP source code is built upon the following open-source projects:
+
+- **[Bluefog](https://github.com/Bluefog-Lib/bluefog)** - A high-performance communication library for distributed training.
+- **[Decent-DP](https://github.com/WangZesen/Decent-DP)** - A research project on decentralized data parallelism.
+
+We extend our sincere gratitude to the original authors and contributors of these projects.
