@@ -81,7 +81,7 @@ Interactive BlueFog is great for research and algorithmic experiments. For large
 
 Using Asyncddp to train a model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
- For the dynamic topology case, you need a little more code:
+ For the asynchronous training model , you need a little more code:
 
 .. code-block:: python
 
