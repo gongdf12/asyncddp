@@ -33,7 +33,7 @@ Quick Start
 
 # AsyncDDP Installation
 
-This project implements asynchronous Distributed Data Parallel (DDP) training. Follow the instructions below to set up your environment and install the package.
+This project implements Asynchronous Distributed Data Parallel (AsyDDP) training. Follow the instructions below to set up your environment and install the package.
 
 ## 🛠 Prerequisites
 
