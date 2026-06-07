@@ -1,4 +1,4 @@
-Asyncddp
+AsyncDDP
 ========
 
 Asyncddp is a package designed for asynchronous model training. An example of asynchronous model training is provided in ``example/test_async-py``.
